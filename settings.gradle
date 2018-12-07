@@ -1,3 +1,4 @@
 rootProject.name = 'java-npm-integration'
 
 include 'java-app'
+include 'npm-app'

@@ -71,6 +71,26 @@ artifacts {
 
 assemble.dependsOn archive
 
+def testsExecutedMarkerName = "${projectDir}/.tests.executed"
+
+task test(type: NpmTask) {
+    dependsOn assemble
+
+    environment CI: "true" // force Jest test runner to execute tests once and finish the process instead of starting watch mode 
+    args = ["run", "test"]
+    inputs.files(fileTree("node_modules"))
+    inputs.files(fileTree("src"))
+
+    // allows easy triggering re-tests
+    doLast {
+        new File(testsExecutedMarkerName).text = "delete this file to force re-execution TypeScript tests"
+    }
+    outputs.file testsExecutedMarkerName
+}
+
+check.dependsOn test
+
 clean {
     delete archive.destinationDir
+    delete testsExecutedMarkerName
 }

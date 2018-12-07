@@ -8,6 +8,9 @@
 # testing
 /coverage
 
+# our marker for tracking if tests were executed
+.tests.executed
+
 # production
 /build
 /build_archive

@@ -14,6 +14,12 @@ buildscript {
 apply plugin: 'base'
 apply plugin: 'com.moowork.node' // gradle-node-plugin
 
+configurations {
+    runtime
+}
+
+configurations.default.extendsFrom(configurations.runtime)
+
 node {
     /* gradle-node-plugin configuration
        https://github.com/srs/gradle-node-plugin/blob/master/docs/node.md
@@ -43,4 +49,28 @@ npm_run_build {
     outputs.dir 'build'
 }
 
-assemble.dependsOn npm_run_build
+// pack output of the build into JAR file
+task archive(type: Zip) {
+    dependsOn npm_run_build
+    baseName 'npm-app'
+    extension 'jar'
+    destinationDir file("${projectDir}/build_archive")
+    from('build') {
+        // optional path under which output will be visible in Java classpath, e.g. static resources path
+        into 'static' 
+    }
+}
+
+// expose the artifact created by the ZIP task - this a crucial part
+artifacts {
+    runtime(archive.archivePath) {
+        builtBy archive
+        type "jar"
+    }
+}
+
+assemble.dependsOn archive
+
+clean {
+    delete archive.destinationDir
+}

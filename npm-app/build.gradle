@@ -2,7 +2,7 @@ buildscript {
     repositories {
         mavenCentral()
         maven {
-            url "https://plugins.gradle.org/m2/"
+            url 'https://plugins.gradle.org/m2/'
         }
     }
 
@@ -40,9 +40,12 @@ node {
 }
 
 npm_run_build {
-    inputs.files fileTree("public")
-    inputs.files(fileTree("src"))
+    // make sure the build task is executed only when appropriate files change
+    inputs.files fileTree('public')
+    inputs.files fileTree('src')
 
+    // 'node_modules' appeared not reliable for dependency change detection (the task was rerun without changes)
+    // though 'package.json' and 'package-lock.json' should be enough anyway
     inputs.file 'package.json'
     inputs.file 'package-lock.json'
 
@@ -57,7 +60,7 @@ task archive(type: Zip) {
     destinationDir file("${projectDir}/build_archive")
     from('build') {
         // optional path under which output will be visible in Java classpath, e.g. static resources path
-        into 'static' 
+        into 'static'
     }
 }
 
@@ -65,25 +68,27 @@ task archive(type: Zip) {
 artifacts {
     runtime(archive.archivePath) {
         builtBy archive
-        type "jar"
+        type 'jar'
     }
 }
 
 assemble.dependsOn archive
 
-def testsExecutedMarkerName = "${projectDir}/.tests.executed"
+String testsExecutedMarkerName = "${projectDir}/.tests.executed"
 
 task test(type: NpmTask) {
     dependsOn assemble
 
-    environment CI: "true" // force Jest test runner to execute tests once and finish the process instead of starting watch mode 
-    args = ["run", "test"]
-    inputs.files(fileTree("node_modules"))
-    inputs.files(fileTree("src"))
+    // force Jest test runner to execute tests once and finish the process instead of starting watch mode
+    environment CI: 'true'
+
+    args = ['run', 'test']
+    inputs.files fileTree('node_modules')
+    inputs.files fileTree('src')
 
     // allows easy triggering re-tests
     doLast {
-        new File(testsExecutedMarkerName).text = "delete this file to force re-execution TypeScript tests"
+        new File(testsExecutedMarkerName).text = 'delete this file to force re-execution TypeScript tests'
     }
     outputs.file testsExecutedMarkerName
 }

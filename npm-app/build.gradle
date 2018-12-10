@@ -83,8 +83,10 @@ task test(type: NpmTask) {
     environment CI: 'true'
 
     args = ['run', 'test']
-    inputs.files fileTree('node_modules')
+    
     inputs.files fileTree('src')
+    inputs.file 'package.json'
+    inputs.file 'package-lock.json'
 
     // allows easy triggering re-tests
     doLast {

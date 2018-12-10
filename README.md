@@ -27,7 +27,7 @@ Create root Gradle project, lets call it `java-npm-integration`, and `java-app` 
 
 ### Create root project
 
-Create `java-npm-integration` Gradle project with the following configuration. It can be done e.g. via IntelliJ's new project wizard.
+Create `java-npm-integration` Gradle project with the following configuration.
 
 `java-npm-integration/build.gradle`
 ```groovy
@@ -45,7 +45,7 @@ wrapper {
 rootProject.name = 'java-npm-integration'
 ```
 
-The directory structure is expected to be as the following:
+The directory structure is expected to be as below:
 
 ```
 java-npm-integration/
@@ -190,7 +190,7 @@ artifacts {
 }
 ```
 
-Make the build depend on the Zip task rather than the directly npm task - replace line
+Now make the build depend on the Zip task rather than the directly npm task by replacing line
 ```groovy
 assemble.dependsOn npm_run_build
 ``` 
@@ -211,3 +211,71 @@ Finally, include `npm-app` project as a dependency of `java-app` by adding
 runtime project(':npm-app')
 ```
 to the `dependencies { }` block of `java-app/build.gradle`.
+
+Now executing the root project build, i.e. `./gradlew ` in `java-npm-integration`, should result in creating `java-app` JAR containing,
+apart of the java project's classes and resources, also the `npm-app` bundle packaged into JAR. 
+
+In our case the mentioned `npm-app.jar` resides in `java-app/build/libs/java-app-0.0.1-SNAPSHOT.jar`:
+```
+$ zipinfo -1 java-app/build/libs/java-app-0.0.1-SNAPSHOT.jar
+...
+BOOT-INF/classes/eu/xword/labs/gc/JavaAppApplication.class
+BOOT-INF/classes/application.properties
+BOOT-INF/lib/
+BOOT-INF/lib/spring-boot-starter-web-2.1.1.RELEASE.jar
+BOOT-INF/lib/npm-app.jar
+BOOT-INF/lib/spring-boot-starter-json-2.1.1.RELEASE.jar
+BOOT-INF/lib/spring-boot-starter-2.1.1.RELEASE.jar
+BOOT-INF/lib/spring-boot-starter-tomcat-2.1.1.RELEASE.jar
+...
+```
+
+## What about tests?
+
+In order to run npm tests during the Gradle build we need to create a task that would execute `npm run test` command. 
+
+Here it's important to make sure the process started by such task exits with a proper status code, i.e. `0` for success 
+and `non-0` for failure - we don't want our Gradle build pass smoothly ignoring JavaScript tests blowing up.
+In our example it's enough to set `CI` environment variable - the `Jest` testing platform (default for create-react-app) 
+is going to behave correctly.
+
+```groovy
+String testsExecutedMarkerName = "${projectDir}/.tests.executed"
+
+task test(type: NpmTask) {
+    dependsOn assemble
+
+    // force Jest test runner to execute tests once and finish the process instead of starting watch mode
+    environment CI: 'true'
+
+    args = ['run', 'test']
+    
+    inputs.files fileTree('src')
+    inputs.file 'package.json'
+    inputs.file 'package-lock.json'
+
+    // allows easy triggering re-tests
+    doLast {
+        new File(testsExecutedMarkerName).text = 'delete this file to force re-execution JavaScript tests'
+    }
+    outputs.file testsExecutedMarkerName
+}
+```
+We also add a file marker for making re-execution of tests easier.
+
+Finally make the project depend on tests execution
+```groovy
+check.dependsOn test
+```
+
+And update clean task:
+```groovy
+clean {
+    delete archive.destinationDir
+    delete testsExecutedMarkerName
+}
+```
+
+That's it. Now your build includes both Java and JavaScript tests execution. 
+In order to execute the latter individually just run `./gradlew npm-app:test`.
+

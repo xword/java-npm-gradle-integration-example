@@ -279,3 +279,15 @@ clean {
 That's it. Now your build includes both Java and JavaScript tests execution. 
 In order to execute the latter individually just run `./gradlew npm-app:test`.
 
+## Summary
+
+We integrated building Java and JavaScript/NPM projects into a single Gradle project. 
+The Java project is build in a standard manner, whereas the JavaScript one is build by `npm` tool wrapped with Gradle script
+using `gradle-node-plugin`. The plugin can provide `npm` and `node` so they do not need to be installed on the system.
+
+Result of the build is a standard Java package (fat JAR) additionally including JavaScript package as classpath resource 
+to be served as a static asset.
+
+Such setup can be useful for simple frontend-backend stacks when there is no need to serve frontend application from a separate server.
+
+Full implementation of this example [can be found on GitHub](https://github.com/xword/labs/tree/master/grzegorz-cwiak/java-npm-integration).  

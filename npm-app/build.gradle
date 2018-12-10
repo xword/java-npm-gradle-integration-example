@@ -90,7 +90,7 @@ task test(type: NpmTask) {
 
     // allows easy triggering re-tests
     doLast {
-        new File(testsExecutedMarkerName).text = 'delete this file to force re-execution TypeScript tests'
+        new File(testsExecutedMarkerName).text = 'delete this file to force re-execution JavaScript tests'
     }
     outputs.file testsExecutedMarkerName
 }

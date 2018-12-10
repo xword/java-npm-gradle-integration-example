@@ -124,7 +124,7 @@ node {
 }
 ```
 
-Now it's time to configure the build task. Normally te build would be done via `npm run build` command. gradle-node-plugin allows executing npm commands using the following underscore notation: `/gradlew npm_<command>`. Behind the scenes it dynamically generates Gradle task. So for our purpose the gradle task is `npm_run_build`. Let's customize it's behavior - we want to sure it is executed only when the appropriate files change.
+Now it's time to configure the build task. Normally te build would be done via `npm run build` command. gradle-node-plugin allows executing npm commands using the following underscore notation: `/gradlew npm_<command>`. Behind the scenes it dynamically generates Gradle task. So for our purpose the gradle task is `npm_run_build`. Let's customize it's behavior - we want to be sure it is executed only when the appropriate files change.
 
 ```groovy
 npm_run_build {
@@ -137,7 +137,7 @@ npm_run_build {
     outputs.dir 'build'
 }
 ```
-One would say we are missing `node_modules` as inputs here, though this directory appeared not reliable for dependency change detection. The task was rerun without changes, probably enormous number of node_modules files does not help here either. Instead we monitor only `package.json` and `package-lock.json` as the reflect state of dependencies enough.
+One would say we are missing `node_modules` as inputs here, though this directory appeared not reliable for dependency change detection. The task was rerun without changes, probably enormous number of node_modules files does not help here either. Instead we monitor only `package.json` and `package-lock.json` as they reflect state of dependencies enough.
 
 Finally make the Gradle build depend on executing npm build:
 ```groovy
@@ -153,9 +153,9 @@ At this moment you should be able to build the root project and see the npm buil
 
 ## Pack npm build result into JAR and expose to the Java project
 
-Now we need to somehow put the npm build result into the Java package. We would like to do it without awkward copying external files into Java project resources during the build. Much more elegant and reliable way is to add them as a regular  dependency, just like any other library.
+Now we need to somehow put the npm build result into the Java package. We would like to do it without awkward copying external files into Java project resources during the build. Much more elegant and reliable, IDE-friendly, way is to add them as a regular  dependency, just like any other library.
 
-Let's update `npm-app/build.gradle` to configure this.
+Let's update `npm-app/build.gradle` to achieve this.
 
 At first define a custom configuration to be used for passing the dependency:
 ```groovy
@@ -190,7 +190,7 @@ artifacts {
 }
 ```
 
-Now make the build depend on the Zip task rather than the directly npm task by replacing line
+Now make the build depend on the Zip task rather than the directly on the build task by replacing line
 ```groovy
 assemble.dependsOn npm_run_build
 ``` 
@@ -212,7 +212,11 @@ runtime project(':npm-app')
 ```
 to the `dependencies { }` block of `java-app/build.gradle`.
 
-Now executing the root project build, i.e. `./gradlew ` in `java-npm-integration`, should result in creating `java-app` JAR containing,
+Now executing the root project build, i.e. inside `java-npm-integration` running a single command
+```groovy
+./gradlew 
+```
+should result in creating `java-app` JAR containing,
 apart of the java project's classes and resources, also the `npm-app` bundle packaged into JAR. 
 
 In our case the mentioned `npm-app.jar` resides in `java-app/build/libs/java-app-0.0.1-SNAPSHOT.jar`:
@@ -232,7 +236,7 @@ BOOT-INF/lib/spring-boot-starter-tomcat-2.1.1.RELEASE.jar
 
 ## What about tests?
 
-In order to run npm tests during the Gradle build we need to create a task that would execute `npm run test` command. 
+In order to run JavaScript tests during the Gradle build we need to create a task that would execute `npm run test` command. 
 
 Here it's important to make sure the process started by such task exits with a proper status code, i.e. `0` for success 
 and `non-0` for failure - we don't want our Gradle build pass smoothly ignoring JavaScript tests blowing up.

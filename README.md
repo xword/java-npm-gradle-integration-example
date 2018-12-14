@@ -20,6 +20,9 @@ The NPM build is done using [gradle-node-plugin](https://github.com/srs/gradle-n
 
 Output of the NPM build is packaged into JAR file and added as a regular dependency to the Java project.
 
+##### Disclaimer
+During the work on this article an actively developed [fork of gradle-node-plugin](https://github.com/node-gradle/gradle-node-plugin) has appeared. It's a good news since the original plugin seemed abandoned. However, due to early phase of the fork development, we decided to stick with the [original plugin](https://github.com/srs/gradle-node-plugin), eventually upgrading in the future.
+
 ## Initial setup
 
 Create root Gradle project, lets call it `java-npm-integration`, and `java-app` and `npm-app` as it's subprojects.

@@ -20,8 +20,8 @@ The NPM build is done using [gradle-node-plugin](https://github.com/srs/gradle-n
 
 Output of the NPM build is packaged into JAR file and added as a regular dependency to the Java project.
 
-#### Disclaimer
-During the work on this article an actively developed [fork of gradle-node-plugin](https://github.com/node-gradle/gradle-node-plugin) has appeared. It's a good news since the original plugin seemed abandoned. However, due to early phase of the fork development, we decided to stick with the [original plugin](https://github.com/srs/gradle-node-plugin), eventually upgrading in the future.
+### Digression - _gradle-node-plugin_
+During work on this article an actively developed [fork of gradle-node-plugin](https://github.com/node-gradle/gradle-node-plugin) has appeared. It's a good news since the original plugin seemed abandoned. However, due to early phase of the fork development, we decided to stick with the [original plugin](https://github.com/srs/gradle-node-plugin), eventually upgrading in the future.
 
 ## Initial setup
 
@@ -64,7 +64,7 @@ java-npm-integration/
 
 ### Create `java-app` project
 
-Generate Spring Boot application using [Spring Initializr](https://start.spring.io/), with `Web` dependency and gradle as build type. Place the generated project under `java-npm-integration` directory.
+Generate Spring Boot application using [Spring Initializr](https://start.spring.io/), with `Web` dependency and Gradle as build type. Place the generated project under `java-npm-integration` directory.
 
 ### Create `npm-app` project
 
@@ -84,9 +84,9 @@ Now building the root project, i.e. running `./gradlew` inside `java-npm-integra
 
 ## Make `npm-app` be built by Gradle
 
-This the essential part consisting of converting `npm-app` to Gradle subproject and executing npm build via Gradle script.
+This is the essential part consisting of converting `npm-app` to Gradle subproject and executing npm build via Gradle script.
 
-Create `npm-app/build.gradle` file with the following contents, already including gradle-node-plugin dependency.
+Create `npm-app/build.gradle` file with the following contents, already including _gradle-node-plugin_ dependency.
 ```groovy
 buildscript {
     repositories {
@@ -105,7 +105,7 @@ apply plugin: 'base'
 apply plugin: 'com.moowork.node' // gradle-node-plugin
 ```
 
-Below add configuration for gradle-node-plugin declaring the versions of npm/NodeJS to be used. The `download` flag is crucial here as it decides about downloading npm/NodeJS by the plugin or using the ones installed in the system.
+Below add configuration for _gradle-node-plugin_ declaring the versions of npm/NodeJS to be used. The `download` flag is crucial here as it decides about downloading npm/NodeJS by the plugin or using the ones installed in the system.
 ```groovy
 node {
     /* gradle-node-plugin configuration
@@ -127,7 +127,7 @@ node {
 }
 ```
 
-Now it's time to configure the build task. Normally te build would be done via `npm run build` command. gradle-node-plugin allows executing npm commands using the following underscore notation: `/gradlew npm_<command>`. Behind the scenes it dynamically generates Gradle task. So for our purpose the gradle task is `npm_run_build`. 
+Now it's time to configure the build task. Normally the build would be done via `npm run build` command. _gradle-node-plugin_ allows executing npm commands using the following underscore notation: `/gradlew npm_<command>`. Behind the scenes it dynamically generates a Gradle task. So for our purpose the Gradle task is `npm_run_build`. 
 
 Let's customize it's behavior - we want to be sure it is executed only when the appropriate files change and avoid any unnecessary building. In order to do so we define `inputs` and `outputs` pointing files or directories to be monitored for changes between executions of the task. Not to be confused with specifying files the task consumes or produces. In case a change is detected the task is going to be executed otherwise it will be treated as up-to-date and skipped.
 
@@ -249,7 +249,7 @@ and open `http://localhost:8080/` in your browser. You should see the React app 
 
 ## What about tests?
 
-The Java tests are handled in standard way byt the java plugin, no changes here.
+The Java tests are handled in standard way by the java plugin, no changes here.
 
 In order to run JavaScript tests during the Gradle build we need to create a task that would execute `npm run test` command. 
 

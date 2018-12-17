@@ -53,11 +53,11 @@ npm_run_build {
 }
 
 // pack output of the build into JAR file
-task archive(type: Zip) {
+task packageNpmApp(type: Zip) {
     dependsOn npm_run_build
     baseName 'npm-app'
     extension 'jar'
-    destinationDir file("${projectDir}/build_archive")
+    destinationDir file("${projectDir}/build_packageNpmApp")
     from('build') {
         // optional path under which output will be visible in Java classpath, e.g. static resources path
         into 'static'
@@ -66,13 +66,13 @@ task archive(type: Zip) {
 
 // expose the artifact created by the ZIP task - this a crucial part
 artifacts {
-    runtime(archive.archivePath) {
-        builtBy archive
+    runtime(packageNpmApp.archivePath) {
+        builtBy packageNpmApp
         type 'jar'
     }
 }
 
-assemble.dependsOn archive
+assemble.dependsOn packageNpmApp
 
 String testsExecutedMarkerName = "${projectDir}/.tests.executed"
 
@@ -98,6 +98,6 @@ task test(type: NpmTask) {
 check.dependsOn test
 
 clean {
-    delete archive.destinationDir
+    delete packageNpmApp.destinationDir
     delete testsExecutedMarkerName
 }

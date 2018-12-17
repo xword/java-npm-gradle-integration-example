@@ -173,11 +173,11 @@ configurations.default.extendsFrom(configurations.runtime)
 
 Add task packing output of the build into JAR file:
 ```groovy
-task archive(type: Zip) {
+task packageNpmApp(type: Zip) {
     dependsOn npm_run_build
     baseName 'npm-app'
     extension 'jar'
-    destinationDir file("${projectDir}/build_archive")
+    destinationDir file("${projectDir}/build_packageNpmApp")
     from('build') {
         // optional path under which output will be visible in Java classpath, e.g. static resources path
         into 'static' 
@@ -185,29 +185,30 @@ task archive(type: Zip) {
 }
 ```
 
-And the crucial part - expose the artifact created by the Zip task:
+And the crucial part - expose the artifact created by `packageNpmApp` task:
 ```groovy
 artifacts {
-    runtime(archive.archivePath) {
-        builtBy archive
+    runtime(packageNpmApp.archivePath) {
+        builtBy packageNpmApp
         type "jar"
     }
 }
 ```
+where `archivePath` points the created JAR file.
 
-Now make the build depend on the Zip task rather than the directly on the build task by replacing line
+Now make the build depend on `packageNpmApp` task rather than the directly on the build task by replacing line
 ```groovy
 assemble.dependsOn npm_run_build
 ``` 
 with
 ```groovy
-assemble.dependsOn archive
+assemble.dependsOn packageNpmApp
 ```
 
 Don't forget to configure proper cleaning as now the output doesn't go to the standard Gradle build directory:
 ```groovy
 clean {
-    delete archive.destinationDir
+    delete packageNpmApp.destinationDir
 }
 ```
 
@@ -280,7 +281,7 @@ check.dependsOn test
 And update clean task:
 ```groovy
 clean {
-    delete archive.destinationDir
+    delete packageNpmApp.destinationDir
     delete testsExecutedMarkerName
 }
 ```

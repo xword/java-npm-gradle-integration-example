@@ -13,7 +13,7 @@
 
 # production
 /build
-/build_archive
+/build_packageNpmApp
 
 # misc
 .DS_Store

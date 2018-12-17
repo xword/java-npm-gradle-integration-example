@@ -1,16 +1,16 @@
 # Integrating Java and NPM builds using Gradle
 
-This article describes how to automate building Java and JavaScript NPM-based applications with a single Gradle build.
+This article describes how to automate building Java and JavaScript NPM-based applications within a single Gradle build.
 
-As examples we use Spring Boot for Java and React for JavaScript/NPM, though there are no obstacles to replacing them with any similar technologies like DropWizard or Angular, using TypeScript instead of JavaScript, etc.
+As examples we are going to use Java backend application based on Spring Boot and JavaScript frontend application based on React. Though there are no obstacles to replacing them with any similar technologies like DropWizard or Angular, using TypeScript instead of JavaScript, etc.
 
 Our main focus is Gradle build configuration, both applications' details are of minor importance.
 
 ## Goal
 
-We want to serve the NPM frontend application as static resource from the Java backend application. Full production package, i.e. fat JAR containing all the resources, should be automatically created via Gradle.
+We want to serve the JavaScript frontend application as static resource from the Java backend application. Full production package, i.e. fat JAR containing all the resources, should be automatically created via Gradle.
 
-The NPM project should be build using Gradle, without any direct interaction with `npm` or `node` CLIs. Going further, it should not be necessary to have them installed on the system at all - especially important when building on a CI server.
+The NPM project should be built using Gradle, without any direct interaction with `npm` or `node` CLIs. Going further, it should not be necessary to have them installed on the system at all - especially important when building on a CI server.
 
 ## The Plan
 
@@ -25,7 +25,7 @@ During the work on this article an actively developed [fork of gradle-node-plugi
 
 ## Initial setup
 
-Create root Gradle project, lets call it `java-npm-integration`, and `java-app` and `npm-app` as it's subprojects.
+Create root Gradle project, lets call it `java-npm-integration`, then `java-app` and `npm-app` as it's subprojects.
 
 
 ### Create root project

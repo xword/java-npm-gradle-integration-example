@@ -10,17 +10,17 @@ Our main focus is Gradle build configuration, both applications' details are of 
 
 We want to serve the NPM frontend application as static resource from the Java backend application. Full production package, i.e. fat JAR containing all the resources, should be automatically created via Gradle.
 
-The NPM project should be build using Gradle, without any direct interaction with `npm` or `node` CLIs. Going further, it should not be necessary to have them installed on the system at all- especially important when building on a CI server.
+The NPM project should be build using Gradle, without any direct interaction with `npm` or `node` CLIs. Going further, it should not be necessary to have them installed on the system at all - especially important when building on a CI server.
 
 ## The Plan
 
-The Java project is built with Gradle in a regular way, no fancy things here, almost.
+The Java project is built with Gradle in a regular way, no fancy things here.
 
 The NPM build is done using [gradle-node-plugin](https://github.com/srs/gradle-node-plugin), which integrates NodeJS-based projects with Gradle without requiring to have NodeJS installed on the system.
 
 Output of the NPM build is packaged into JAR file and added as a regular dependency to the Java project.
 
-##### Disclaimer
+#### Disclaimer
 During the work on this article an actively developed [fork of gradle-node-plugin](https://github.com/node-gradle/gradle-node-plugin) has appeared. It's a good news since the original plugin seemed abandoned. However, due to early phase of the fork development, we decided to stick with the [original plugin](https://github.com/srs/gradle-node-plugin), eventually upgrading in the future.
 
 ## Initial setup
@@ -127,7 +127,9 @@ node {
 }
 ```
 
-Now it's time to configure the build task. Normally te build would be done via `npm run build` command. gradle-node-plugin allows executing npm commands using the following underscore notation: `/gradlew npm_<command>`. Behind the scenes it dynamically generates Gradle task. So for our purpose the gradle task is `npm_run_build`. Let's customize it's behavior - we want to be sure it is executed only when the appropriate files change.
+Now it's time to configure the build task. Normally te build would be done via `npm run build` command. gradle-node-plugin allows executing npm commands using the following underscore notation: `/gradlew npm_<command>`. Behind the scenes it dynamically generates Gradle task. So for our purpose the gradle task is `npm_run_build`. 
+
+Let's customize it's behavior - we want to be sure it is executed only when the appropriate files change and avoid any unnecessary building. In order to do so we define `inputs` and `outputs` pointing files or directories to be monitored for changes between executions of the task. Not to be confused with specifying files the task consumes or produces. In case a change is detected the task is going to be executed otherwise it will be treated as up-to-date and skipped.
 
 ```groovy
 npm_run_build {

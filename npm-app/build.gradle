@@ -14,12 +14,6 @@ buildscript {
 apply plugin: 'base'
 apply plugin: 'com.moowork.node' // gradle-node-plugin
 
-configurations {
-    runtime
-}
-
-configurations.default.extendsFrom(configurations.runtime)
-
 node {
     /* gradle-node-plugin configuration
        https://github.com/srs/gradle-node-plugin/blob/master/docs/node.md
@@ -64,9 +58,16 @@ task packageNpmApp(type: Zip) {
     }
 }
 
-// expose the artifact created by the ZIP task - this a crucial part
+// declare a dedicated scope for publishing the packaged JAR
+configurations {
+    npmResources
+}
+
+configurations.default.extendsFrom(configurations.npmResources)
+
+// expose the artifact created by the packaging task
 artifacts {
-    runtime(packageNpmApp.archivePath) {
+    npmResources(packageNpmApp.archivePath) {
         builtBy packageNpmApp
         type 'jar'
     }

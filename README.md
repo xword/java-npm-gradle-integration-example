@@ -158,20 +158,11 @@ At this moment you should be able to build the root project and see the npm buil
 
 ## Pack npm build result into JAR and expose to the Java project
 
-Now we need to somehow put the npm build result into the Java package. We would like to do it without awkward copying external files into Java project resources during the build. Much more elegant and reliable, IDE-friendly, way is to add them as a regular  dependency, just like any other library.
+Now we need to somehow put the npm build result into the Java package. We would like to do it without awkward copying external files into Java project resources during the build. Much more elegant and reliable way is to add them as a regular dependency, just like any other library.
 
 Let's update `npm-app/build.gradle` to achieve this.
 
-At first define a custom configuration to be used for passing the dependency:
-```groovy
-configurations {
-    runtime
-}
-
-configurations.default.extendsFrom(configurations.runtime)
-```
-
-Add task packing output of the build into JAR file:
+At first define task packing results of the build into JAR file:
 ```groovy
 task packageNpmApp(type: Zip) {
     dependsOn npm_run_build
@@ -185,10 +176,20 @@ task packageNpmApp(type: Zip) {
 }
 ```
 
-And the crucial part - expose the artifact created by `packageNpmApp` task:
+Now we need to define a custom configuration to be used for publishing the JAR artifact:
+```groovy
+configurations {
+    npmResources
+}
+
+configurations.default.extendsFrom(configurations.npmResources)
+```
+We do not use here any predefined configurations, like `archives`, in order to be sure no other dependencies are included in the published scope.
+
+Then expose the artifact created by the packaging task:
 ```groovy
 artifacts {
-    runtime(packageNpmApp.archivePath) {
+    npmResources(packageNpmApp.archivePath) {
         builtBy packageNpmApp
         type "jar"
     }
@@ -196,7 +197,7 @@ artifacts {
 ```
 where `archivePath` points the created JAR file.
 
-Now make the build depend on `packageNpmApp` task rather than the directly on the build task by replacing line
+Next make the build depend on `packageNpmApp` task rather than the directly on the build task by replacing line
 ```groovy
 assemble.dependsOn npm_run_build
 ``` 
@@ -214,9 +215,9 @@ clean {
 
 Finally, include `npm-app` project as a dependency of `java-app` by adding
 ```groovy
-runtime project(':npm-app')
+runtimeOnly project(':npm-app')
 ```
-to the `dependencies { }` block of `java-app/build.gradle`.
+to the `dependencies { }` block of `java-app/build.gradle`. Here the scope (configuration) is `runtimeOnly` since we do not want to include the dependency during compilation time.
 
 Now executing the root project build, i.e. inside `java-npm-integration` running a single command
 ```groovy
@@ -227,7 +228,7 @@ apart of the java project's classes and resources, also the `npm-app` bundle pac
 
 In our case the mentioned `npm-app.jar` resides in `java-app/build/libs/java-app-0.0.1-SNAPSHOT.jar`:
 ```
-$ zipinfo -1 java-app/build/libs/java-app-0.0.1-SNAPSHOT.jar
+zipinfo -1 java-app/build/libs/java-app-0.0.1-SNAPSHOT.jar
 ...
 BOOT-INF/classes/eu/xword/labs/gc/JavaAppApplication.class
 BOOT-INF/classes/application.properties
@@ -239,6 +240,12 @@ BOOT-INF/lib/spring-boot-starter-2.1.1.RELEASE.jar
 BOOT-INF/lib/spring-boot-starter-tomcat-2.1.1.RELEASE.jar
 ...
 ```
+
+Last but not the least - check if all of this works. Start the Java application with the following command:
+```
+java -jar java-app/build/libs/java-app-0.0.1-SNAPSHOT.jar
+```
+and open `http://localhost:8080/` in your browser. You should see the React app welcome page.
 
 ## What about tests?
 

@@ -249,6 +249,8 @@ and open `http://localhost:8080/` in your browser. You should see the React app 
 
 ## What about tests?
 
+The Java tests are handled in standard way byt the java plugin, no changes here.
+
 In order to run JavaScript tests during the Gradle build we need to create a task that would execute `npm run test` command. 
 
 Here it's important to make sure the process started by such task exits with a proper status code, i.e. `0` for success 

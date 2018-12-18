@@ -99,6 +99,6 @@ task test(type: NpmTask) {
 check.dependsOn test
 
 clean {
-    delete packageNpmApp.destinationDir
+    delete packageNpmApp.archivePath
     delete testsExecutedMarkerName
 }

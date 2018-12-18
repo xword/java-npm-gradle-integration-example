@@ -209,7 +209,7 @@ assemble.dependsOn packageNpmApp
 Don't forget to configure proper cleaning as now the output doesn't go to the standard Gradle build directory:
 ```groovy
 clean {
-    delete packageNpmApp.destinationDir
+    delete packageNpmApp.archivePath
 }
 ```
 
@@ -290,7 +290,7 @@ check.dependsOn test
 And update `clean` task:
 ```groovy
 clean {
-    delete packageNpmApp.destinationDir
+    delete packageNpmApp.archivePath
     delete testsExecutedMarkerName
 }
 ```

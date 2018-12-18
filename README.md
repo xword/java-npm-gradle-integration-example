@@ -25,14 +25,14 @@ During work on this article an actively developed [fork of gradle-node-plugin](h
 
 ## Initial setup
 
-Create a root Gradle project, lets call it `java-npm-integration`, then `java-app` and `npm-app` as it's subprojects.
+Create a root Gradle project, lets call it `java-npm-gradle-integration-example`, then `java-app` and `npm-app` as it's subprojects.
 
 
 ### Create the root project
 
-Create `java-npm-integration` Gradle project with the following configuration.
+Create `java-npm-gradle-integration-example` Gradle project with the following configuration.
 
-`java-npm-integration/build.gradle`
+`java-npm-gradle-integration-example/build.gradle`
 ```groovy
 defaultTasks 'build'
 
@@ -43,15 +43,15 @@ wrapper {
 }
 ```
 
-`java-npm-integration/settings.gradle`
+`java-npm-gradle-integration-example/settings.gradle`
 ```groovy
-rootProject.name = 'java-npm-integration'
+rootProject.name = 'java-npm-gradle-integration-example'
 ```
 
 The directory structure is expected to be as below:
 
 ```
-java-npm-integration/
+java-npm-gradle-integration-example/
 ├── build.gradle
 ├── gradle
 │   └── wrapper
@@ -64,13 +64,13 @@ java-npm-integration/
 
 ### Create `java-app` project
 
-Generate a Spring Boot application using [Spring Initializr](https://start.spring.io/), with `Web` dependency and Gradle as build type. Place the generated project under `java-npm-integration` directory.
+Generate a Spring Boot application using [Spring Initializr](https://start.spring.io/), with `Web` dependency and Gradle as build type. Place the generated project under `java-npm-gradle-integration-example` directory.
 
 ### Create `npm-app` project
 
-Generate `npm-app` React application using [create-react-app](https://github.com/facebook/create-react-app) under `java-npm-integration` directory.
+Generate `npm-app` React application using [create-react-app](https://github.com/facebook/create-react-app) under `java-npm-gradle-integration-example` directory.
 
-## Adapt `java-app` to be Gradle subproject of `java-npm-integration`
+## Adapt `java-app` to be Gradle subproject of `java-npm-gradle-integration-example`
 
 Remove `gradle` directory, `gradlew`, `gradlew.bat` and `settings.gradle` files from `java-app` as they are provided by the root project.
 
@@ -78,9 +78,9 @@ Update the root project to include `java-app` by adding the following line
 ```groovy
 include 'java-app'
 ```
-to `java-npm-integration/settings.gradle`.
+to `java-npm-gradle-integration-example/settings.gradle`.
 
-Now building the root project, i.e. running `./gradlew` inside `java-npm-integration` directory should build the `java-app` as well.
+Now building the root project, i.e. running `./gradlew` inside `java-npm-gradle-integration-example` directory should build the `java-app` as well.
 
 ## Make `npm-app` be built by Gradle
 
@@ -149,7 +149,7 @@ Finally make the Gradle build depend on executing npm build:
 assemble.dependsOn npm_run_build
 ```
 
-Now include `npm-app` in the root project by adding the following line to `java-npm-integration/settings.gradle`:
+Now include `npm-app` in the root project by adding the following line to `java-npm-gradle-integration-example/settings.gradle`:
 ```groovy
 include 'npm-app'
 ```
@@ -219,7 +219,7 @@ runtimeOnly project(':npm-app')
 ```
 to the `dependencies { }` block of `java-app/build.gradle`. Here the scope (configuration) is `runtimeOnly` since we do not want to include the dependency during compilation time.
 
-Now executing the root project build, i.e. inside `java-npm-integration` running a single command
+Now executing the root project build, i.e. inside `java-npm-gradle-integration-example` running a single command
 ```groovy
 ./gradlew 
 ```
@@ -309,4 +309,4 @@ to be served as a static asset.
 
 Such setup can be useful for simple frontend-backend stacks when there is no need to serve frontend application from a separate server.
 
-Full implementation of this example [can be found on GitHub](https://github.com/xword/labs/tree/master/grzegorz-cwiak/java-npm-integration).  
+Full implementation of this example [can be found on GitHub](https://github.com/xword/java-npm-gradle-integration-example).  

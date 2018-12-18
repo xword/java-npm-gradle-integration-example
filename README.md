@@ -2,13 +2,13 @@
 
 This article describes how to automate building Java and JavaScript NPM-based applications within a single Gradle build.
 
-As examples we are going to use Java backend application based on Spring Boot and JavaScript frontend application based on React. Though there are no obstacles to replacing them with any similar technologies like DropWizard or Angular, using TypeScript instead of JavaScript, etc.
+As examples we are going to use a Java backend application based on Spring Boot and a JavaScript frontend application based on React. Though there are no obstacles to replacing them with any similar technologies like DropWizard or Angular, using TypeScript instead of JavaScript, etc.
 
 Our main focus is Gradle build configuration, both applications' details are of minor importance.
 
 ## Goal
 
-We want to serve the JavaScript frontend application as static resource from the Java backend application. Full production package, i.e. fat JAR containing all the resources, should be automatically created via Gradle.
+We want to serve the JavaScript frontend application as static resources from the Java backend application. The full production package, i.e. a fat JAR containing all the resources, should be automatically created via Gradle.
 
 The NPM project should be built using Gradle, without any direct interaction with `npm` or `node` CLIs. Going further, it should not be necessary to have them installed on the system at all - especially important when building on a CI server.
 
@@ -18,17 +18,17 @@ The Java project is built with Gradle in a regular way, no fancy things here.
 
 The NPM build is done using [gradle-node-plugin](https://github.com/srs/gradle-node-plugin), which integrates NodeJS-based projects with Gradle without requiring to have NodeJS installed on the system.
 
-Output of the NPM build is packaged into JAR file and added as a regular dependency to the Java project.
+Output of the NPM build is packaged into a JAR file and added as a regular dependency to the Java project.
 
 ### Digression - _gradle-node-plugin_
-During work on this article an actively developed [fork of gradle-node-plugin](https://github.com/node-gradle/gradle-node-plugin) has appeared. It's a good news since the original plugin seemed abandoned. However, due to early phase of the fork development, we decided to stick with the [original plugin](https://github.com/srs/gradle-node-plugin), eventually upgrading in the future.
+During work on this article an actively developed [fork of gradle-node-plugin](https://github.com/node-gradle/gradle-node-plugin) has appeared. It's a good news since the original plugin seemed abandoned. However, due to the early phase of the fork development, we decided to stick with the [original plugin](https://github.com/srs/gradle-node-plugin), eventually upgrading in the future.
 
 ## Initial setup
 
-Create root Gradle project, lets call it `java-npm-integration`, then `java-app` and `npm-app` as it's subprojects.
+Create a root Gradle project, lets call it `java-npm-integration`, then `java-app` and `npm-app` as it's subprojects.
 
 
-### Create root project
+### Create the root project
 
 Create `java-npm-integration` Gradle project with the following configuration.
 
@@ -64,7 +64,7 @@ java-npm-integration/
 
 ### Create `java-app` project
 
-Generate Spring Boot application using [Spring Initializr](https://start.spring.io/), with `Web` dependency and Gradle as build type. Place the generated project under `java-npm-integration` directory.
+Generate a Spring Boot application using [Spring Initializr](https://start.spring.io/), with `Web` dependency and Gradle as build type. Place the generated project under `java-npm-integration` directory.
 
 ### Create `npm-app` project
 
@@ -72,7 +72,7 @@ Generate `npm-app` React application using [create-react-app](https://github.com
 
 ## Adapt `java-app` to be Gradle subproject of `java-npm-integration`
 
-Remove `gradle` directory, `gradlew`, `gradlew.bat` and `settings.gradle` files from `java-app` as the are provided by the root project.
+Remove `gradle` directory, `gradlew`, `gradlew.bat` and `settings.gradle` files from `java-app` as they are provided by the root project.
 
 Update the root project to include `java-app` by adding the following line 
 ```groovy
@@ -129,7 +129,7 @@ node {
 
 Now it's time to configure the build task. Normally the build would be done via `npm run build` command. _gradle-node-plugin_ allows executing npm commands using the following underscore notation: `/gradlew npm_<command>`. Behind the scenes it dynamically generates a Gradle task. So for our purpose the Gradle task is `npm_run_build`. 
 
-Let's customize it's behavior - we want to be sure it is executed only when the appropriate files change and avoid any unnecessary building. In order to do so we define `inputs` and `outputs` pointing files or directories to be monitored for changes between executions of the task. Not to be confused with specifying files the task consumes or produces. In case a change is detected the task is going to be executed otherwise it will be treated as up-to-date and skipped.
+Let's customize its behavior - we want to be sure it is executed only when the appropriate files change and avoid any unnecessary building. In order to do so we define `inputs` and `outputs` pointing files or directories to be monitored for changes between executions of the task. Not to be confused with specifying files the task consumes or produces. In case a change is detected the task is going to be executed otherwise it will be treated as up-to-date and skipped.
 
 ```groovy
 npm_run_build {
@@ -156,9 +156,9 @@ include 'npm-app'
 
 At this moment you should be able to build the root project and see the npm build results under `npm-app/build` directory.
 
-## Pack npm build result into JAR and expose to the Java project
+## Pack npm build result into a JAR and expose to the Java project
 
-Now we need to somehow put the npm build result into the Java package. We would like to do it without awkward copying external files into Java project resources during the build. Much more elegant and reliable way is to add them as a regular dependency, just like any other library.
+Now we need to somehow put the npm build result into a Java package. We would like to do it without awkward copying external files into Java project resources during the build. Much more elegant and reliable way is to add them as a regular dependency, just like any other library.
 
 Let's update `npm-app/build.gradle` to achieve this.
 
@@ -287,7 +287,7 @@ Finally make the project depend on tests execution
 check.dependsOn test
 ```
 
-And update clean task:
+And update `clean` task:
 ```groovy
 clean {
     delete packageNpmApp.destinationDir

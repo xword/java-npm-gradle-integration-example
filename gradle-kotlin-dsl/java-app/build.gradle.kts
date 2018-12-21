@@ -29,8 +29,8 @@ repositories {
 
 
 dependencies {
-    "implementation"("org.springframework.boot:spring-boot-starter-web")
-    "testImplementation"("org.springframework.boot:spring-boot-starter-test")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-    "runtimeOnly"(project(path = ":npm-app", configuration = "npmResources"))
+    runtimeOnly(project(path = ":npm-app", configuration = "npmResources"))
 }

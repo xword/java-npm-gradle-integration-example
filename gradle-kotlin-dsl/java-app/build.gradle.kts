@@ -10,15 +10,16 @@ buildscript {
     }
 }
 
-apply(plugin = "java")
-apply(plugin = "eclipse")
-apply(plugin = "org.springframework.boot")
-apply(plugin = "io.spring.dependency-management")
+plugins {
+    java
+    id("org.springframework.boot") version "2.1.1.RELEASE"
+    id("io.spring.dependency-management") version "1.0.6.RELEASE"
+}
 
 group = "eu.xword.labs.gc"
 version = "0.0.1-SNAPSHOT"
 
-configure<JavaPluginConvention> {
+java {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
 

@@ -12,10 +12,12 @@ buildscript {
     }
 }
 
-apply(plugin = "base")
-apply(plugin = "com.moowork.node") // gradle-node-plugin
+plugins {
+    base
+    id("com.moowork.node") version "1.2.0" // gradle-node-plugin
+}
 
-configure<NodeExtension> {
+node {
     /* gradle-node-plugin configuration
        https://github.com/srs/gradle-node-plugin/blob/master/docs/node.md
 
@@ -62,7 +64,7 @@ val packageNpmApp by tasks.registering(Jar::class) {
 // declare a dedicated scope for publishing the packaged JAR
 val npmResources by configurations.creating
 
-configurations.getByName("default").extendsFrom(npmResources)
+configurations.named("default").get().extendsFrom(npmResources)
 
 // expose the artifact created by the packaging task
 artifacts {
@@ -72,7 +74,7 @@ artifacts {
     }
 }
 
-tasks.named("assemble") {
+tasks.assemble {
     dependsOn(packageNpmApp)
 }
 
@@ -97,11 +99,11 @@ val test by tasks.registering(NpmTask::class) {
     outputs.file(testsExecutedMarkerName)
 }
 
-tasks.named("check") {
+tasks.check {
     dependsOn(test)
 }
 
-tasks.named<Delete>("clean") {
+tasks.clean {
     delete(packageNpmApp.get().archivePath)
     delete(testsExecutedMarkerName)
 }

@@ -1,4 +1,4 @@
-rootProject.name = 'java-npm-gradle-integration-example'
+rootProject.name = 'java-npm-gradle-integration-example_groovy-dsl'
 
 include 'java-app'
 include 'npm-app'

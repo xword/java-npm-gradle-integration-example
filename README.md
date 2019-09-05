@@ -1,10 +1,16 @@
-# Integrating Java and NPM builds using Gradle
+# Integrating Java and NPM builds using Gradle - Groovy or Kotlin DSL
 
 This article describes how to automate building Java and JavaScript NPM-based applications within a single Gradle build.
 
 As examples we are going to use a Java backend application based on Spring Boot and a JavaScript frontend application based on React. Though there are no obstacles to replacing them with any similar technologies like DropWizard or Angular, using TypeScript instead of JavaScript, etc.
 
 Our main focus is Gradle build configuration, both applications' details are of minor importance.
+
+## Gradle DSL, Groovy or Kotlin - the choice is yours
+
+The article uses Groovy DSL for Gradle scripts, though this approach works perfectly fine with Kotlin DSL as well. 
+
+Both versions, Groovy and Kotlin DSL, of the whole working example [can be found on GitHub](https://github.com/xword/java-npm-gradle-integration-example).
 
 ## Goal
 
@@ -309,4 +315,4 @@ to be served as a static asset.
 
 Such setup can be useful for simple frontend-backend stacks when there is no need to serve frontend application from a separate server.
 
-Full implementation of this example [can be found on GitHub](https://github.com/xword/java-npm-gradle-integration-example).  
+Full implementations in both, **Groovy and Kotlin DSL**, of this example [can be found on GitHub](https://github.com/xword/java-npm-gradle-integration-example).  
